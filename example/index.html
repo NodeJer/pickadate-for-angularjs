@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../src/angular-pickadate.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <meta charset="utf-8">
+    <style type="text/css">
+      .container {
+        width: 300px;
+        margin: auto;
+      }
+      .selected-date {
+        padding: 10px;
+        text-align: center;
+      }
+      input.date{
+        display: block;
+        width: 300px;
+        margin: 10px auto;
+      }
+      *{
+        padding: 0; margin: 0;
+      }
+    </style>
+  </head>
+  <body ng-app="testApp" id="ng-app" ng-controller="TestController">
+    <input type="date" class="date" ng-model="date">
+    Selected date is {{date || '(no date selected)'}}
+
+    <script src="../src/angular.min.js"></script>
+    <script src="../src/tools.js"></script>
+    <script src="../src/angular-pickadate.js"></script>
+
+    <script type="text/javascript">
+      angular.module('testApp', ['pickadate']);
+
+      function TestController($scope, dateFilter) {
+        $scope.date = dateFilter(new Date(), 'yyyy-MM-dd');
+
+        /*
+        $scope.minDate = '2013-10-05';
+        $scope.maxDate = '2014-12-04';
+        $scope.disabledDates = ['2013-11-19', '2013-11-30'];*/
+      }
+    </script>
+  </body>
+</html>
