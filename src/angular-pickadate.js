@@ -48,20 +48,22 @@
     function($compile, $timeout) {
 
       return function($scope, $element, attrs) {
-        if (attrs.type !== 'date' || /chrome/i.test(navigator.userAgent)) {
+        alert(navigator.platform)
+        if (attrs.type !== 'date' || /chrome|ipad/i.test(navigator.userAgent)) {
           return angular.noop;
         }
-        // var clientWidth = document.documentElement.clientWidth;
-        var offset = tools.offset($element[0], window);
-        var top = (offset.top+$element[0].offsetHeight+2)+'px';
-        var left = offset.left+'px';
-        
-        var datePickerTemp = '<div class="pickadate-container" style="top:'+top+';left:'+left+'" pickadate ng-show="dateShow" ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates=disabledDates></div>'
+        var datePickerTemp = '<div class="pickadate-container" pickadate ng-show="dateShow" ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates=disabledDates></div>'
         var $div = angular.element(datePickerTemp);
 
         angular.element(document.body).append($div);
 
         $compile($div)($scope);
+
+        setPosition();
+
+        angular.element(window).on('resize', function(){
+          setPosition();
+        });
 
         $element.on('click', function(ev) {
           ev.stopPropagation();
@@ -76,6 +78,14 @@
               $scope.dateShow = false;
             }, 0);
         });
+
+        function setPosition(){
+          var offset = tools.offset($element[0], window);
+          var top = (offset.top+$element[0].offsetHeight+2)+'px';
+          var left = offset.left+'px';
+
+          $div.css({ left: left, top: top });
+        }
       }
     }
   ])
