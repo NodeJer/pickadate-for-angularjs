@@ -48,7 +48,6 @@
     function($compile, $timeout) {
 
       return function($scope, $element, attrs) {
-        alert(navigator.platform)
         if (attrs.type !== 'date' || /chrome|ipad/i.test(navigator.userAgent)) {
           return angular.noop;
         }
