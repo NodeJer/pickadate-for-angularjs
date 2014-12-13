@@ -44,8 +44,34 @@
 
   angular.module('pickadate', ['pickadate.utils'])
 
-  .directive('type', ['$compile', '$timeout',
-    function($compile, $timeout) {
+  .factory('offset', function(){
+
+    return function(element, parentWin){
+      if(parentWin === window || parentWin === document){
+        parentWin = document.body;
+      }
+      parentWin.style.position = 'relative';
+
+      var offsetTop = element.offsetTop;
+      var offsetLeft = element.offsetLeft;
+
+      var offset = {
+        top: offsetTop,
+        left: offsetLeft
+      };
+      while(element.offsetParent && element.offsetParent !== parentWin){
+        offset.top+=element.offsetParent.offsetTop;
+        offset.left+=element.offsetParent.offsetLeft;
+      }
+
+      return offset;
+      
+    }
+
+  })
+
+  .directive('type', ['$compile', '$timeout', 'offset',
+    function($compile, $timeout, offset) {
 
       return function($scope, $element, attrs) {
         if (attrs.type !== 'date' || /chrome|ipad|iphone/i.test(navigator.userAgent)) {
@@ -79,9 +105,9 @@
         });
 
         function setPosition(){
-          var offset = tools.offset($element[0], window);
-          var top = (offset.top+$element[0].offsetHeight+2)+'px';
-          var left = offset.left+'px';
+          var offsetPos = offset($element[0], window);
+          var top = (offsetPos.top+$element[0].offsetHeight+2)+'px';
+          var left = offsetPos.left+'px';
 
           $div.css({ left: left, top: top });
         }
