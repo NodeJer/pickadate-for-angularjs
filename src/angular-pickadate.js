@@ -48,7 +48,7 @@
     function($compile, $timeout) {
 
       return function($scope, $element, attrs) {
-        if (attrs.type !== 'date' || /chrome|ipad/i.test(navigator.userAgent)) {
+        if (attrs.type !== 'date' || /chrome|ipad|iphone/i.test(navigator.userAgent)) {
           return angular.noop;
         }
         var datePickerTemp = '<div class="pickadate-container" pickadate ng-show="dateShow" ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates=disabledDates></div>'
