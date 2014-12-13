@@ -92,6 +92,7 @@
 
         $element.on('click', function(ev) {
           ev.stopPropagation();
+          ev.preventDefault();
 
           $timeout(function() {
               $scope.dateShow = !$scope.dateShow;
