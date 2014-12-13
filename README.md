@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # angular-pickadate
 
 A simple and fluid inline datepicker for AngularJS with no extra dependencies.
@@ -90,3 +91,6 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+=======
+#pickadate-for-angularjs
+>>>>>>> ba309f892e13f9d1ac19c70eee6e7e1e809124ef
