@@ -1,4 +1,3 @@
-;
 (function(angular) {
   var indexOf = [].indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
@@ -40,14 +39,14 @@
           }
         };
       }
-    ]);
+  ]);
 
   angular.module('pickadate', ['pickadate.utils'])
 
-  .factory('offset', function(){
+  .factory('offset', function() {
 
-    return function(element, parentWin){
-      if(parentWin === window || parentWin === document){
+    return function(element, parentWin) {
+      if (parentWin === window || parentWin === document) {
         parentWin = document.body;
       }
       parentWin.style.position = 'relative';
@@ -59,193 +58,205 @@
         top: offsetTop,
         left: offsetLeft
       };
-      while(element.offsetParent && element.offsetParent !== parentWin){
-        offset.top+=element.offsetParent.offsetTop;
-        offset.left+=element.offsetParent.offsetLeft;
+      while (element.offsetParent && element.offsetParent !== parentWin) {
+        offset.top += element.offsetParent.offsetTop;
+        offset.left += element.offsetParent.offsetLeft;
       }
 
       return offset;
-      
+
     }
 
   })
 
-  .directive('type', ['$compile', '$timeout', 'offset',
-    function($compile, $timeout, offset) {
-
-      return function($scope, $element, attrs) {
-        if (attrs.type !== 'date' || /chrome|ipad|iphone/i.test(navigator.userAgent)) {
-          return angular.noop;
+  .directive('input', ['$compile', 'offset', function($compile, offset){
+    return {
+      scope: {
+        ngModel: '=',
+        minDate: '=',
+        maxDate: '=',
+        disabledDates: '='
+      },
+      restrict: 'E',
+      link: function($scope, $elements, $attrs, controller) {
+        if($attrs.type !== 'date'){
+          return;
         }
-        var datePickerTemp = '<div class="pickadate-container" pickadate ng-show="dateShow" ng-model="date" min-date="minDate" max-date="maxDate" disabled-dates=disabledDates></div>'
-        var $div = angular.element(datePickerTemp);
+        else{
+          console.log($elements[0].type);
+          if($elements[0].type == 'date')return;
+        }
+        
+        var pickdateTemp = '<div class="pickadate-container" pickadate ng-model="ngModel" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates"></div>';
+        
+        var $div = angular.element(pickdateTemp);
 
         angular.element(document.body).append($div);
 
         $compile($div)($scope);
 
+        $div.css({display: 'none'});
+
+        $elements.on('focus', function(ev){
+
+          ev.stopPropagation();
+
+          $div.css({display: 'block'});
+
+        }).on('blur', function(){
+          setTimeout(function(){
+            $div.css({display: 'none'});
+          }, 200);
+        });
+
+        angular.element(window).on('resize', setPosition);
+
         setPosition();
 
-        angular.element(window).on('resize', function(){
-          setPosition();
-        });
+        function setPosition() {
+            var offsetPos = offset($elements[0], window);
+            var top = (offsetPos.top + $elements[0].offsetHeight + 2) + 'px';
+            var left = offsetPos.left + 'px';
 
-        $element.on('click', function(ev) {
-          ev.stopPropagation();
-          ev.preventDefault();
-
-          $timeout(function() {
-              $scope.dateShow = !$scope.dateShow;
-            }, 0);
-        });
-
-        angular.element(document).on('click', function(ev){
-          $timeout(function() {
-              $scope.dateShow = false;
-            }, 0);
-        });
-
-        function setPosition(){
-          var offsetPos = offset($element[0], window);
-          var top = (offsetPos.top+$element[0].offsetHeight+2)+'px';
-          var left = offsetPos.left+'px';
-
-          $div.css({ left: left, top: top });
+            $div.css({
+              left: left,
+              top: top
+            });
         }
       }
-    }
-  ])
-    .directive('pickadate', ['$locale', 'pickadateUtils', 'dateFilter', '$compile',
-      function($locale, dateUtils, dateFilter, $compile) {
+    };
+  }])
+  .directive('pickadate', ['$locale', 'pickadateUtils', 'dateFilter', '$compile',
+    function($locale, dateUtils, dateFilter, $compile) {
 
-        return {
-          require: 'ngModel',
-          scope: {
-            date: '=ngModel',
-            minDate: '=',
-            maxDate: '=',
-            disabledDates: '='
-          },
-          template: '<div class="pickadate" ng-click="$event.stopPropagation()">' +
-            '<div class="pickadate-header">' +
-            '<div class="pickadate-controls">' +
-            '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">上月</a>' +
-            '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">下月</a>' +
-            '</div>' +
-            '<h3 class="pickadate-centered-heading">' +
-            '{{currentDate | date:"MM yyyy"}}' +
-            '</h3>' +
-            '</div>' +
-            '<div class="pickadate-body">' +
-            '<div class="pickadate-main">' +
-            '<ul class="pickadate-cell">' +
-            '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
-            '{{dayName}}' +
-            '</li>' +
-            '</ul>' +
-            '<ul class="pickadate-cell">' +
-            '<li ng-repeat="d in dates" ng-click="setDate(d)" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
-            '{{d.date | date:"d"}}' +
-            '</li>' +
-            '</ul>' +
-            '</div>' +
-            '</div>' +
-            '</div>',
+      return {
+        require: 'ngModel',
+        scope: {
+          date: '=ngModel',
+          minDate: '=',
+          maxDate: '=',
+          disabledDates: '='
+        },
+        template: '<div class="pickadate" ng-click="$event.stopPropagation()">' +
+          '<div class="pickadate-header">' +
+          '<div class="pickadate-controls">' +
+          '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">上月</a>' +
+          '<a href="" class="pickadate-next" ng-click="changeMonth(1)" ng-show="allowNextMonth">下月</a>' +
+          '</div>' +
+          '<h3 class="pickadate-centered-heading">' +
+          '{{currentDate | date:"MM yyyy"}}' +
+          '</h3>' +
+          '</div>' +
+          '<div class="pickadate-body">' +
+          '<div class="pickadate-main">' +
+          '<ul class="pickadate-cell">' +
+          '<li class="pickadate-head" ng-repeat="dayName in dayNames">' +
+          '{{dayName}}' +
+          '</li>' +
+          '</ul>' +
+          '<ul class="pickadate-cell">' +
+          '<li ng-repeat="d in dates" ng-click="setDate(d)" class="{{d.className}}" ng-class="{\'pickadate-active\': date == d.date}">' +
+          '{{d.date | date:"d"}}' +
+          '</li>' +
+          '</ul>' +
+          '</div>' +
+          '</div>' +
+          '</div>',
 
-          link: function(scope, element, attrs, ngModel) {
-            var minDate = scope.minDate && dateUtils.stringToDate(scope.minDate),
-              maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
-              disabledDates = scope.disabledDates || [],
-              currentDate = new Date();
+        link: function(scope, element, attrs, ngModel) {
+          var minDate = scope.minDate && dateUtils.stringToDate(scope.minDate),
+            maxDate = scope.maxDate && dateUtils.stringToDate(scope.maxDate),
+            disabledDates = scope.disabledDates || [],
+            currentDate = new Date();
 
-            // scope.dayNames = $locale.DATETIME_FORMATS['SHORTDAY'];
-            scope.dayNames = ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            scope.currentDate = currentDate;
+          // scope.dayNames = $locale.DATETIME_FORMATS['SHORTDAY'];
+          scope.dayNames = ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+          scope.currentDate = currentDate;
 
-            scope.render = function(initialDate) {
+          scope.render = function(initialDate) {
 
-              initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
+            initialDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1, 3);
 
-              var currentMonth = initialDate.getMonth() + 1;
-              var dayCount = new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 0, 3).getDate();
+            var currentMonth = initialDate.getMonth() + 1;
+            var dayCount = new Date(initialDate.getFullYear(), initialDate.getMonth() + 1, 0, 3).getDate();
 
-              var prevDates = dateUtils.dateRange(-initialDate.getDay(), 0, initialDate);
-              var currentMonthDates = dateUtils.dateRange(0, dayCount, initialDate);
+            var prevDates = dateUtils.dateRange(-initialDate.getDay(), 0, initialDate);
+            var currentMonthDates = dateUtils.dateRange(0, dayCount, initialDate);
 
-              var lastDate = dateUtils.stringToDate(currentMonthDates[currentMonthDates.length - 1]);
-              var nextMonthDates = dateUtils.dateRange(1, 7 - lastDate.getDay(), lastDate);
-              var allDates = prevDates.concat(currentMonthDates, nextMonthDates);
-              var dates = [];
-              var today = dateFilter(new Date(), 'yyyy-MM-dd');
+            var lastDate = dateUtils.stringToDate(currentMonthDates[currentMonthDates.length - 1]);
+            var nextMonthDates = dateUtils.dateRange(1, 7 - lastDate.getDay(), lastDate);
+            var allDates = prevDates.concat(currentMonthDates, nextMonthDates);
+            var dates = [];
+            var today = dateFilter(new Date(), 'yyyy-MM-dd');
 
-              // Add an extra row if needed to make the calendar to have 6 rows
-              if (allDates.length / 7 < 6) {
-                allDates = allDates.concat(dateUtils.dateRange(1, 8, allDates[allDates.length - 1]));
-              }
-
-              var nextMonthInitialDate = new Date(initialDate);
-              nextMonthInitialDate.setMonth(currentMonth);
-
-              scope.allowPrevMonth = !minDate || initialDate > minDate;
-              scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
-
-              for (var i = 0; i < allDates.length; i++) {
-                var className = "",
-                  date = allDates[i];
-
-                if (date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
-                  className = 'pickadate-disabled';
-                } else if (indexOf.call(disabledDates, date) >= 0) {
-                  className = 'pickadate-disabled pickadate-unavailable';
-                } else {
-                  className = 'pickadate-enabled';
-                }
-
-                if (date === today) {
-                  className += ' pickadate-today';
-                }
-
-                dates.push({
-                  date: date,
-                  className: className
-                });
-              }
-
-              scope.dates = dates;
-            };
-
-            scope.setDate = function(dateObj) {
-
-              if (isDateDisabled(dateObj)) return;
-              ngModel.$setViewValue(dateObj.date);
-            };
-
-            ngModel.$render = function() {
-              // console.log(ngModel)
-              if ((date = ngModel.$modelValue) && (indexOf.call(disabledDates, date) === -1)) {
-                scope.currentDate = currentDate = dateUtils.stringToDate(date);
-              } else if (date) {
-                // if the initial date set by the user is in the disabled dates list, unset it
-                scope.setDate({});
-              }
-              scope.render(currentDate);
-            };
-
-            scope.changeMonth = function(offset) {
-              // If the current date is January 31th, setting the month to date.getMonth() + 1
-              // sets the date to March the 3rd, since the date object adds 30 days to the current
-              // date. Settings the date to the 2nd day of the month is a workaround to prevent this
-              // behaviour
-              currentDate.setDate(1);
-              currentDate.setMonth(currentDate.getMonth() + offset);
-              scope.render(currentDate);
-            };
-
-            function isDateDisabled(dateObj) {
-              return (/pickadate-disabled/.test(dateObj.className));
+            // Add an extra row if needed to make the calendar to have 6 rows
+            if (allDates.length / 7 < 6) {
+              allDates = allDates.concat(dateUtils.dateRange(1, 8, allDates[allDates.length - 1]));
             }
+
+            var nextMonthInitialDate = new Date(initialDate);
+            nextMonthInitialDate.setMonth(currentMonth);
+
+            scope.allowPrevMonth = !minDate || initialDate > minDate;
+            scope.allowNextMonth = !maxDate || nextMonthInitialDate < maxDate;
+
+            for (var i = 0; i < allDates.length; i++) {
+              var className = "",
+                date = allDates[i];
+
+              if (date < scope.minDate || date > scope.maxDate || dateFilter(date, 'M') !== currentMonth.toString()) {
+                className = 'pickadate-disabled';
+              } else if (indexOf.call(disabledDates, date) >= 0) {
+                className = 'pickadate-disabled pickadate-unavailable';
+              } else {
+                className = 'pickadate-enabled';
+              }
+
+              if (date === today) {
+                className += ' pickadate-today';
+              }
+
+              dates.push({
+                date: date,
+                className: className
+              });
+            }
+
+            scope.dates = dates;
+          };
+
+          scope.setDate = function(dateObj) {
+
+            if (isDateDisabled(dateObj)) return;
+            ngModel.$setViewValue(dateObj.date);
+          };
+
+          ngModel.$render = function() {
+            // console.log(ngModel)
+            if ((date = ngModel.$modelValue) && (indexOf.call(disabledDates, date) === -1)) {
+              scope.currentDate = currentDate = dateUtils.stringToDate(date);
+            } else if (date) {
+              // if the initial date set by the user is in the disabled dates list, unset it
+              scope.setDate({});
+            }
+            scope.render(currentDate);
+          };
+
+          scope.changeMonth = function(offset) {
+            // If the current date is January 31th, setting the month to date.getMonth() + 1
+            // sets the date to March the 3rd, since the date object adds 30 days to the current
+            // date. Settings the date to the 2nd day of the month is a workaround to prevent this
+            // behaviour
+            currentDate.setDate(1);
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            scope.render(currentDate);
+          };
+
+          function isDateDisabled(dateObj) {
+            return (/pickadate-disabled/.test(dateObj.className));
           }
-        };
-      }
-    ]);
+        }
+      };
+    }
+  ]);
 })(window.angular);
