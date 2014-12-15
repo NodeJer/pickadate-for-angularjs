@@ -24,10 +24,10 @@
     </style>
   </head>
   <body ng-app="testApp" id="ng-app" ng-controller="TestController">
-    <input type="date" class="date" readonly="true" ng-model="date" min-date="'2014-01-01'" max-date="'2014-04-01'" disabled-dates="['2014-02-09']">
+    <input type="date" class="date" ng-model="date" min-date="'2014-01-01'" max-date="'2014-04-01'" disabled-dates="['2014-02-09']">
     Selected date is {{date || '(no date selected)'}}
 
-    <input type="date" class="date" readonly="true" ng-model="date2">
+    <input type="date" class="date" ng-model="date2">
 
     <script src="../src/angular.min.js"></script>
     <script src="../src/angular-pickadate.js"></script>
@@ -37,12 +37,7 @@
 
       function TestController($scope, dateFilter) {
         $scope.date = '2014-02-03';
-        $scope.date2 = dateFilter(new Date(), 'yyyy-MM-dd');
-        
-        /*
-        $scope.minDate = '2013-10-05';
-        $scope.maxDate = '2014-12-04';
-        $scope.disabledDates = ['2014-02-09'];*/
+        $scope.date2 = dateFilter('2014-02-3', 'yyyy-MM-dd');
       }
     </script>
   </body>

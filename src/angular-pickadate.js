@@ -16,10 +16,12 @@
 
           stringToDate: function(dateString) {
             if (this.isDate(dateString)) return new Date(dateString);
-            var dateParts = dateString.split('-'),
-              year = dateParts[0],
-              month = dateParts[1],
-              day = dateParts[2];
+            var dateParts = dateString.split('-');
+
+
+            var year = dateParts[0];
+            var month = dateParts[1] || 2;
+            var day = dateParts[2] || 1;
 
             // set hour to 3am to easily avoid DST change
             return new Date(year, month - 1, day, 3);
@@ -69,12 +71,12 @@
 
   })
 
-  .directive('input', ['$compile', 'offset', function($compile, offset){
+  .directive('input', ['$compile', 'offset', 'dateFilter', 'pickadateUtils', function($compile, offset, dateFilter, pickadateUtils){
     return {
       scope: {
         ngModel: '=',
-        min: '=',
-        max: '=',
+        minDate: '=',
+        maxDate: '=',
         disabledDates: '='
       },
       restrict: 'E',
@@ -86,7 +88,7 @@
           if($elements[0].type == 'date')return;
         }
 
-        var pickdateTemp = '<div class="pickadate-container" pickadate ng-model="ngModel" min-date="min" max-date="max" disabled-dates="disabledDates"></div>';
+        var pickdateTemp = '<div class="pickadate-container" pickadate ng-model="ngModel" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates"></div>';
         
         var $div = angular.element(pickdateTemp);
 
@@ -103,7 +105,7 @@
           $div.css({display: 'block'});
 
         });
-        
+
         angular.element(document).on('click', function(){
           $div.css({display: 'none'});
         });
