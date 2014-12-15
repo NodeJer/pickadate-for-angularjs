@@ -37,7 +37,7 @@
 
       function TestController($scope, dateFilter) {
         $scope.date = '2014-02-03';
-        $scope.date2 = dateFilter('2014-02-3', 'yyyy-MM-dd');
+        $scope.date2 = dateFilter(new Date(), 'yyyy-MM-dd');
       }
     </script>
   </body>
