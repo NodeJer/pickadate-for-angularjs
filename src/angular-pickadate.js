@@ -83,10 +83,9 @@
           return;
         }
         else{
-          console.log($elements[0].type);
           if($elements[0].type == 'date')return;
         }
-        
+
         var pickdateTemp = '<div class="pickadate-container" pickadate ng-model="ngModel" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates"></div>';
         
         var $div = angular.element(pickdateTemp);
@@ -97,16 +96,20 @@
 
         $div.css({display: 'none'});
 
-        $elements.on('focus', function(ev){
+        $elements.on('click', function(ev){
 
           ev.stopPropagation();
 
           $div.css({display: 'block'});
 
-        }).on('blur', function(){
+        })/*.on('blur', function(){
           setTimeout(function(){
             $div.css({display: 'none'});
           }, 200);
+        });*/
+
+        angular.element(document).on('click', function(){
+          $div.css({display: 'none'});
         });
 
         angular.element(window).on('resize', setPosition);
