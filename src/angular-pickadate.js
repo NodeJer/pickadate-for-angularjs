@@ -73,8 +73,8 @@
     return {
       scope: {
         ngModel: '=',
-        minDate: '=',
-        maxDate: '=',
+        min: '=',
+        max: '=',
         disabledDates: '='
       },
       restrict: 'E',
@@ -86,7 +86,7 @@
           if($elements[0].type == 'date')return;
         }
 
-        var pickdateTemp = '<div class="pickadate-container" pickadate ng-model="ngModel" min-date="minDate" max-date="maxDate" disabled-dates="disabledDates"></div>';
+        var pickdateTemp = '<div class="pickadate-container" pickadate ng-model="ngModel" min-date="min" max-date="max" disabled-dates="disabledDates"></div>';
         
         var $div = angular.element(pickdateTemp);
 
