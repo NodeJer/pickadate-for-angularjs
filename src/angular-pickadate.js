@@ -102,12 +102,8 @@
 
           $div.css({display: 'block'});
 
-        })/*.on('blur', function(){
-          setTimeout(function(){
-            $div.css({display: 'none'});
-          }, 200);
-        });*/
-
+        });
+        
         angular.element(document).on('click', function(){
           $div.css({display: 'none'});
         });
