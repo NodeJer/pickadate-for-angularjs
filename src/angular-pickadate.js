@@ -43,7 +43,7 @@
       }
   ]);
 
-  angular.module('pickadate', ['pickadate.utils'])
+  angular.module('ng.pickadate', ['pickadate.utils'])
 
   .factory('offset', function() {
 
